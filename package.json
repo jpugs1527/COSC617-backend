@@ -1,0 +1,18 @@
+{
+  "name": "car-rental-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app.js",
+    "test": "test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "1.7.0",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.2"
+  }
+}
