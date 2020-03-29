@@ -2,9 +2,9 @@
   "name": "car-rental-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "nodemon api.js",
+    "start": "nodemon app.js",
     "test": "test"
   },
   "keywords": [],
@@ -12,7 +12,14 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "1.7.0",
-    "express": "^4.17.1",
-    "nodemon": "^2.0.2"
+    "express": "^4.8.7",
+    "jsonwebtoken": "^7.3.0",
+    "moment": "^2.17.1",
+    "moment-timezone": "^0.5.13",
+    "mongoose": "^5.1.1",
+    "node-uuid": "^1.4.8",
+    "nodemon": "^2.0.2",
+    "swagger-ui-express": "^2.0.13",
+    "sync-request": "^4.0.2"
   }
 }
