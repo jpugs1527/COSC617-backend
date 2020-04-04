@@ -1,20 +1,23 @@
+require('dotenv').config();
 var express = require('express');
 var app = express();
-const bodyParser = require('body-parser');
-const path = require('path');
-const { Connection } = require('./lib/mongoConnection');
+const db = require('./lib/db');
 
-// Establishing db connection
-Connection.connectToMongo();
-console.log(Connection);
+db.connect((err) => {
+  if (err) {
+    console.log("Unable to connect to db :(");
+    process.exit(1);
+  } else {
+    app.listen(3000);
+    console.log("App successfully connected to database. Runnning at localhost:3000");
+  }
+})
 
 // Tell app.js where to get the controllers
 const userController = require('./controllers/userController');
 
 app.get('/', (req, res) => {
-  res.json({text:"hello world"});
-})
+
+});
 
 app.use('/user', userController);
-
-app.listen(3000);
