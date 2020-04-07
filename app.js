@@ -1,6 +1,7 @@
 require('dotenv').config();
 var express = require('express');
 var app = express();
+const bodyParser = require('body-parser');
 const db = require('./lib/db');
 
 db.connect((err) => {
@@ -12,6 +13,10 @@ db.connect((err) => {
     console.log("App successfully connected to database. Runnning at localhost:3000");
   }
 })
+
+app.use(bodyParser.urlencoded({extended: true}));
+
+app.use(bodyParser.json());
 
 // Tell app.js where to get the controllers
 const userController = require('./controllers/userController');
