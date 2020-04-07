@@ -17,9 +17,13 @@ router.get('/all', function (req, res, next) {
 router.post('/new', function (req, res, next) {
   var usrObj = req.body;
   console.log("Creating user");
-  db.getDB().collection(collection).insertOne(usrObj, function(err, res) {
-    if (err) throw err;
-    console.log("User created");
+  db.getDB().collection(collection).insertOne(usrObj, function(err, response) {
+    if (err) {
+      res.status(500).send({ error: "Unable to create user" });
+      console.log(err);
+    } else {
+      res.status(200).send({ createdUser: usrObj });
+    }
   });
 });
 
