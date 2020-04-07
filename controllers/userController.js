@@ -7,7 +7,6 @@ const collection = "users";
 router.get('/all', function (req, res, next) {
   db.getDB().collection(collection).find({}).toArray((err, documents) => {
     if (err) throw err;
-    console.log(documents);
     res.json(documents);
   });
 });
