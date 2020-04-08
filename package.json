@@ -8,7 +8,7 @@
     "test": "test"
   },
   "keywords": [],
-  "author": "",
+  "author": "Jordan Puglisi",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.19.2",
