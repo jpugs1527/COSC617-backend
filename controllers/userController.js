@@ -1,4 +1,5 @@
 const express = require("express");
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 const db = require('../lib/db');
 const collection = "users";
@@ -23,6 +24,37 @@ router.post('/new', function (req, res, next) {
       res.status(200).send({ createdUser: usrObj });
     }
   });
+});
+
+// User sign on
+router.post('/login', function (req, res, next) {
+  var usrObj = req.body;
+
+  // TODO get findOne working
+  db.getDB().collection(collection).find({ username : usrObj.username }).toArray((err, documents) => {
+    if (err) throw err;
+    
+    //TODO encrypt password and make sure username is unique
+    if (documents[0].password == usrObj.password) {
+      var token = jwt.sign( {username:usrObj.username},'supersecret',{ expiresIn:1800} );
+      res.send( {token: token, user: documents[0]} );
+    } else {
+      // return an empty token - this will set the local storage on F/E to empty
+      res.send( {token: ""} );
+    }
+  });
+});
+
+// User authentication
+router.get('/authenticate', function (req, res, next) {
+  var token = req.query.token;
+  jwt.verify(token,'supersecret', function(err, decoded){
+    if(!err){
+      res.json( {isLoggedIn : true} );
+    } else {
+      res.send( {isLoggedIn : false} );
+    }
+  })
 });
 
 module.exports = router;
