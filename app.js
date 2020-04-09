@@ -1,9 +1,11 @@
 require('dotenv').config();
 var express = require('express');
 var app = express();
+var cors = require('cors');
 const bodyParser = require('body-parser');
 const port = process.env.PORT || 3000;
 const db = require('./lib/db');
+
 
 db.connect((err) => {
   if (err) {
@@ -13,9 +15,11 @@ db.connect((err) => {
     app.listen(port, () => {
       console.log(`Our app is running on port ${ port }`);
     });
-    console.log("App successfully connected to database. Runnning at localhost:3000");
+    console.log("App successfully connected to database. Runnning at localhost:" + port);
   }
 })
+
+app.use(cors());
 
 app.use(bodyParser.urlencoded({extended: true}));
 
