@@ -25,4 +25,9 @@ router.post('/new', function (req, res, next) {
   });
 });
 
+// Route to edit a user
+router.put('/{id}/edit', function (req, res, next) {
+
+});
+
 module.exports = router;
