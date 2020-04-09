@@ -57,10 +57,4 @@ router.get('/authenticate', function (req, res, next) {
   })
 });
 
-// User logout
-router.get('/logout', function (req, res, next) {
-  var token = req.query.token;
-  jwt.destroy(token);
-});
-
 module.exports = router;
