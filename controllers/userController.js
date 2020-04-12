@@ -16,6 +16,10 @@ router.get('/all', function (req, res, next) {
 router.post('/new', function (req, res, next) {
   var usrObj = req.body;
   console.log("Creating user");
+
+  // Creates an index to ensure the username field is unique
+  db.getDB().collection(collection).createIndex( { "username": 1 }, { unique: true } );
+
   db.getDB().collection(collection).insertOne(usrObj, function(err, response) {
     if (err) {
       res.status(500).send({ error: "Unable to create user" });
@@ -26,7 +30,7 @@ router.post('/new', function (req, res, next) {
   });
 });
 
-// Route to edit a user
+// TODO Route to edit a user
 router.put('/{id}/edit', function (req, res, next) {
 
 });
