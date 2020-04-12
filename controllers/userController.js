@@ -39,18 +39,28 @@ router.put('/{id}/edit', function (req, res, next) {
 router.post('/login', function (req, res, next) {
   var usrObj = req.body;
 
+  var ret = {
+    token: "",
+    user: "",
+    message: "Incorrect credentials",
+    error: true
+  }
+
   // TODO get findOne working
   db.getDB().collection(collection).find({ username : usrObj.username }).toArray((err, documents) => {
     if (err) throw err;
-    
-    //TODO encrypt password and make sure username is unique
-    if (documents[0].password == usrObj.password) {
-      var token = jwt.sign( {username:usrObj.username},'supersecret',{ expiresIn:1800} );
-      res.send( {token: token, user: documents[0]} );
-    } else {
-      // return an empty token - this will set the local storage on F/E to empty
-      res.send( {token: ""} );
+
+    if (typeof documents[0] != "undefined") {
+      //TODO encrypt password and make sure username is unique
+      if (documents[0].password == usrObj.password) {
+        delete documents[0].password;
+        ret.token = jwt.sign( {username:usrObj.username},'supersecret',{ expiresIn:1800} );
+        ret.user = documents[0];
+        ret.error = false;
+        ret.message = "Valid credentials"
+      } 
     }
+    res.send( ret );
   });
 });
 
