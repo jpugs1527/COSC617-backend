@@ -14,6 +14,13 @@ cloudinary.config({
 
 router.use(formData.parse())
 
+router.get('/view_all', (req, res) => {
+  db.getDB().collection(collection).find({}).toArray((err, documents) => {
+    if (err) throw err;
+    res.json(documents);
+  });
+})
+
 router.get('/view_all/:user_id', (req, res) => {
   db.getDB().collection(collection).find({userId : req.params.user_id}).toArray((err, documents) => {
     if (err) throw err;
