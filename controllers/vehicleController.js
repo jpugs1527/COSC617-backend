@@ -14,6 +14,27 @@ cloudinary.config({
 
 router.use(formData.parse())
 
+router.get('/view_all', (req, res) => {
+  db.getDB().collection(collection).find({}).toArray((err, documents) => {
+    if (err) throw err;
+    res.json(documents);
+  });
+})
+
+router.get('/view_all/:user_id', (req, res) => {
+  db.getDB().collection(collection).find({userId : req.params.user_id}).toArray((err, documents) => {
+    if (err) throw err;
+    res.json(documents);
+  });
+})
+
+router.get('/view_one/:vehicle_id', (req, res) => {
+  db.getDB().collection(collection).find(db.getPrimaryKey(req.params.vehicle_id)).toArray((err, documents) => {
+    if (err) throw err;
+    res.json(documents);
+  });
+})
+
 router.post('/image_upload', (req, res) => {
 
   const values = Object.values(req.files)
@@ -48,6 +69,36 @@ router.post('/add', function (req, res, next) {
       res.send({
         error: false,
         message: "Successfully added vehicle"
+      });
+    }
+  });
+});
+
+router.put('/edit/:vehicle_id', function (req, res, next) {
+  var usrObj = req.body;
+
+  jwt.verify(usrObj.token,'supersecret', function(err, decoded){
+    if(err){
+      res.send({
+        error: true,
+        message: "Failed to update vehicle"
+      });
+    }
+  });
+
+  delete usrObj.token;
+
+  console.log(usrObj);
+  db.getDB().collection(collection).updateOne({_id: db.getPrimaryKey(req.params.vehicle_id)}, { $set: usrObj }, function(err, response) {
+    if (err) {
+      res.send({
+        error: true,
+        message: "Failed to updated vehicle"
+      });
+    } else {
+      res.send({
+        error: false,
+        message: "Successfully updated vehicle"
       });
     }
   });
