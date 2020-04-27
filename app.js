@@ -13,7 +13,7 @@ db.connect((err) => {
     process.exit(1);
   } else {
     app.listen(port, () => {
-      console.log(`App successfully connected to database. Runnning at localhost: ${ port }`);
+      console.log(`App successfully connected to database. Runnning at localhost:${ port }`);
     });
   }
 })

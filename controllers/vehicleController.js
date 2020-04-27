@@ -48,21 +48,21 @@ router.post('/image_upload', (req, res) => {
 router.post('/add', function (req, res, next) {
   var usrObj = req.body;
 
-  jwt.verify(usrObj.token,'supersecret', function(err, decoded){
-    if(err){
-      res.send({
-        error: true,
-        message: "Failed to add vehicle"
-      });
-    }
-  });
+  // jwt.verify(usrObj.token,'supersecret', function(err, decoded){
+  //   if(err){
+  //     res.send({
+  //       error: err,
+  //       message: "Failed to authorize user"
+  //     });
+  //   }
+  // });
 
-  delete usrObj.token;
+  // delete usrObj.token;
   
   db.getDB().collection(collection).insertOne(usrObj, function(err, response) {
     if (err) {
       res.send({
-        error: true,
+        error: err,
         message: "Failed to add vehicle"
       });
     } else {
@@ -102,6 +102,27 @@ router.put('/edit/:vehicle_id', function (req, res, next) {
       });
     }
   });
+});
+
+// Route for search
+router.post("/search", function(req, res, next) {
+  var query = req.body;
+  console.log(query);
+
+  // jwt.verify(query.token,'supersecret', function(err, decoded){
+  //   if(err){
+  //     res.send({
+  //       error: true,
+  //       message: "Failed to update vehicle"
+  //     });
+  //   }
+  // });
+
+  db.getDB().collection(collection).find({ location : query.location }).toArray((err, documents) => {
+    if (err) throw err;
+    res.send(documents);
+  });
+
 });
 
 module.exports = router;
