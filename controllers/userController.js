@@ -3,6 +3,9 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 const db = require('../lib/db');
 const collection = "users";
+const bcrypt = require("bcryptjs")
+
+const saltRounds = 10
 
 /* Return all users in the db. */
 router.get('/all', function (req, res, next) {
@@ -20,19 +23,43 @@ router.post('/new', function (req, res, next) {
   // Creates an index to ensure the username field is unique
   db.getDB().collection(collection).createIndex( { "username": 1 }, { unique: true } );
 
-  db.getDB().collection(collection).insertOne(usrObj, function(err, response) {
+  bcrypt.genSalt(saltRounds, function (err, salt) {
     if (err) {
-      res.status(500).send({ error: "Unable to create user" });
-      console.log(err);
+      throw err
     } else {
-      res.status(200).send({ createdUser: usrObj });
+      bcrypt.hash(usrObj.password, salt, function(err, hash) {
+        if (err) {
+          throw err
+        } else {
+          delete usrObj.password;
+          usrObj.hash = hash;
+          db.getDB().collection(collection).insertOne(usrObj, function(err, response) {
+            if (err) {
+              res.status(500).send({ error: "Unable to create user" });
+            } else {
+              res.status(200).send({ createdUser: usrObj });
+            }
+          });
+        }
+      })
     }
   });
 });
 
 // TODO Route to edit a user
-router.put('/{id}/edit', function (req, res, next) {
+router.put('/edit/:id', function (req, res, next) {
+  var usrObj = req.body;
+  var newvalues = { $set: usrObj };
 
+  db.getDB().collection(collection).findOneAndUpdate({_id: db.getPrimaryKey(req.params.id)}, newvalues, { returnOriginal: false }, function(err, result) {
+    if (err) {
+      res.send(err);
+    } else {
+      //delete result.value.password;
+      delete result.value.password;
+      res.send(result);
+    }
+  });
 });
 
 // User sign on
@@ -49,18 +76,22 @@ router.post('/login', function (req, res, next) {
   // TODO get findOne working
   db.getDB().collection(collection).find({ username : usrObj.username }).toArray((err, documents) => {
     if (err) throw err;
-
+    
     if (typeof documents[0] != "undefined") {
-      //TODO encrypt password and make sure username is unique
-      if (documents[0].password == usrObj.password) {
-        delete documents[0].password;
-        ret.token = jwt.sign( {username:usrObj.username},'supersecret',{ expiresIn:1800} );
-        ret.user = documents[0];
-        ret.error = false;
-        ret.message = "Valid credentials"
-      } 
+      bcrypt.compare(usrObj.password, documents[0].hash, function(err, isMatch) {
+        if (err) {
+          throw err
+        } else if (isMatch) {
+          console.log(documents[0]);
+          delete documents[0].hash;
+          ret.token = jwt.sign( {username:usrObj.username},'supersecret',{ expiresIn:1800} );
+          ret.user = documents[0];
+          ret.error = false;
+          ret.message = "Valid credentials"
+        }
+        res.send( ret );
+      })
     }
-    res.send( ret );
   });
 });
 
