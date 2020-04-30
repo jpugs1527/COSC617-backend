@@ -31,8 +31,19 @@ router.post('/new', function (req, res, next) {
 });
 
 // TODO Route to edit a user
-router.put('/{id}/edit', function (req, res, next) {
+router.put('/edit/:id', function (req, res, next) {
+  var usrObj = req.body;
+  var newvalues = { $set: usrObj };
 
+  db.getDB().collection(collection).findOneAndUpdate({_id: db.getPrimaryKey(req.params.id)}, newvalues, { returnOriginal: false }, function(err, result) {
+    if (err) {
+      res.send(err);
+    } else {
+      //delete result.value.password;
+      delete result.value.password;
+      res.send(result);
+    }
+  });
 });
 
 // User sign on
