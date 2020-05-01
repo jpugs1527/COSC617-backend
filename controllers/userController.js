@@ -18,14 +18,14 @@ router.get('/all', function (req, res, next) {
 // Create a new user
 router.post('/new', function (req, res, next) {
   var usrObj = req.body;
-  console.log("Creating user");
 
   // Creates an index to ensure the username field is unique
   db.getDB().collection(collection).createIndex( { "username": 1 }, { unique: true } );
 
   bcrypt.genSalt(saltRounds, function (err, salt) {
     if (err) {
-      throw err
+      console.log(err);
+      res.status(500).send({ error: "Unable to create user" });
     } else {
       bcrypt.hash(usrObj.password, salt, function(err, hash) {
         if (err) {
@@ -80,9 +80,9 @@ router.post('/login', function (req, res, next) {
     if (typeof documents[0] != "undefined") {
       bcrypt.compare(usrObj.password, documents[0].hash, function(err, isMatch) {
         if (err) {
-          throw err
+          console.log(err);
+          ret.error = true;
         } else if (isMatch) {
-          console.log(documents[0]);
           delete documents[0].hash;
           ret.token = jwt.sign( {username:usrObj.username},'supersecret',{ expiresIn:1800} );
           ret.user = documents[0];

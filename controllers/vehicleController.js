@@ -88,7 +88,6 @@ router.put('/edit/:vehicle_id', function (req, res, next) {
 
   delete usrObj.token;
 
-  console.log(usrObj);
   db.getDB().collection(collection).updateOne({_id: db.getPrimaryKey(req.params.vehicle_id)}, { $set: usrObj }, function(err, response) {
     if (err) {
       res.send({
@@ -109,17 +108,9 @@ router.post("/search", function(req, res, next) {
   var query = req.body;
   console.log(query);
 
-  // jwt.verify(query.token,'supersecret', function(err, decoded){
-  //   if(err){
-  //     res.send({
-  //       error: true,
-  //       message: "Failed to update vehicle"
-  //     });
-  //   }
-  // });
-
   db.getDB().collection(collection).find({ location : query.location }).toArray((err, documents) => {
     if (err) throw err;
+    console.log(documents);
     res.send(documents);
   });
 
