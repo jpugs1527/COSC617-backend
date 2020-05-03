@@ -3,8 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const formData = require('express-form-data')
 const db = require('../lib/db');
-const collection = "rent";
-
+const rentCollection = "rent";
 router.use(formData.parse())
 
 router.post('/add', function (req, res, next) {
@@ -21,7 +20,7 @@ router.post('/add', function (req, res, next) {
   
     delete rentObj.token;
     
-    db.getDB().collection(collection).insertOne(rentObj, function(err, response) {
+    db.getDB().collection(rentCollection).insertOne(rentObj, function(err, response) {
       if (err) {
         res.send({
           error: err,
@@ -37,10 +36,17 @@ router.post('/add', function (req, res, next) {
 });
 
 router.get('/view_all/:vehicleId', (req, res) => {
-    db.getDB().collection(collection).find({vehicleId : req.params.vehicleId}).toArray((err, documents) => {
-      if (err) throw err;
-      res.json(documents);
-    });
-  })
+  db.getDB().collection(rentCollection).find({vehicleId : req.params.vehicleId}).toArray((err, documents) => {
+    if (err) throw err;
+    res.json(documents);
+  });
+})
+
+router.get('/view_by_user/:userId', (req, res) => {
+  db.getDB().collection(rentCollection).find({userId : req.params.userId}).toArray((err, rentDocuments) => {
+    if (err) throw err;
+    res.send(rentDocuments);
+  });
+})
 
 module.exports = router;
