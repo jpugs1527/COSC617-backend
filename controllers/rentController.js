@@ -58,7 +58,7 @@ router.get('/view_by_user/:userId', (req, res) => {
 
 // Code that runs just daily to check if a rental period is over and 
 // automatically makes that vehicle available again ("59 11 * * *")
-var resetRentals = schedule.scheduleJob("* * * * *", function() {
+var resetRentals = schedule.scheduleJob("59 11 * * *", function() {
   var date = new Date();
   var dateArr, m, d, y;
   var currVehicle;
