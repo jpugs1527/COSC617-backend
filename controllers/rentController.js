@@ -83,8 +83,6 @@ var resetRentals = schedule.scheduleJob("* * * * *", function() {
           db.getDB().collection(vehicleCollection).updateOne({_id: db.getPrimaryKey(rental.vehicleId)}, { $set: {status: "available"} }, function(err, response) {
             if (err) {
               console.log(err);
-            } else {
-              console.log("nah");
             }
           });
         }
