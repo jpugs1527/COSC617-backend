@@ -109,7 +109,6 @@ router.post("/search", function(req, res, next) {
 
   db.getDB().collection(collection).find( { $and: [ { location : query.location }, { status : "available" } ]}).toArray((err, documents) => {
     if (err) throw err;
-    console.log(documents);
     res.send(documents);
   });
 

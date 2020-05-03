@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const formData = require('express-form-data')
 const db = require('../lib/db');
 const rentCollection = "rent";
+const vehicleCollection = "vehicles";
 const schedule = require("node-schedule");
 router.use(formData.parse())
 
@@ -28,6 +29,11 @@ router.post('/add', function (req, res, next) {
           message: "Failed to add rent history"
         });
       } else {
+        db.getDB().collection(vehicleCollection).updateOne({_id: db.getPrimaryKey(rentObj.vehicleId)}, { $set: {status: "rented"} }, function(err, response) {
+          if (err) {
+            console.log(err);
+          }
+        });
         res.send({
           error: false,
           message: "Successfully added rent history"
@@ -46,7 +52,6 @@ router.get('/view_all/:vehicleId', (req, res) => {
 router.get('/view_by_user/:userId', (req, res) => {
   db.getDB().collection(rentCollection).find({userId : req.params.userId}).toArray((err, rentDocuments) => {
     if (err) throw err;
-    console.log(rentDocuments);
     res.send(rentDocuments);
   });
 });
@@ -56,7 +61,8 @@ router.get('/view_by_user/:userId', (req, res) => {
 var resetRentals = schedule.scheduleJob("* * * * *", function() {
   var date = new Date();
   var dateArr, m, d, y;
-  var regex = "([0-9])+/g"
+  var currVehicle;
+
   db.getDB().collection(rentCollection).find({}).toArray((err, rentals) => {
     rentals.forEach(rental => {
       // Parse through string to get rental end date
@@ -64,11 +70,27 @@ var resetRentals = schedule.scheduleJob("* * * * *", function() {
       m = dateArr[0];
       d = dateArr[1];
       y = dateArr[2];
-      if (m == date.getMonth()+1 && d == date.getDate() && y == date.getFullYear()) {
-        console.log("resetting to available");
-      }
+
+      var currVehicle;
+      // Some reason this isnt working.  Works as expected but not the best solution without this.
+      // Get the vehicle associated with the rental
+      // db.getDB().collection(vehicleCollection).find({_id: db.getPrimaryKey(rental.vehicleId)}), ((err, vehicle) => {
+      //   console.log(vehicle);
+      //   currVehicle = vehicle;
+
+        if (m == date.getMonth()+1 && d == date.getDate() && y == date.getFullYear()) {
+          console.log("Resetting to available");
+          db.getDB().collection(vehicleCollection).updateOne({_id: db.getPrimaryKey(rental.vehicleId)}, { $set: {status: "available"} }, function(err, response) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log("nah");
+            }
+          });
+        }
+      // });
     });
-  })
+  });
 });
 
 
