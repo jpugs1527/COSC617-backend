@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const formData = require('express-form-data')
 const db = require('../lib/db');
 const rentCollection = "rent";
+const schedule = require("node-schedule");
 router.use(formData.parse())
 
 router.post('/add', function (req, res, next) {
@@ -48,6 +49,27 @@ router.get('/view_by_user/:userId', (req, res) => {
     console.log(rentDocuments);
     res.send(rentDocuments);
   });
-})
+});
+
+// Code that runs just daily to check if a rental period is over and 
+// automatically makes that vehicle available again ("59 11 * * *")
+var resetRentals = schedule.scheduleJob("* * * * *", function() {
+  var date = new Date();
+  var dateArr, m, d, y;
+  var regex = "([0-9])+/g"
+  db.getDB().collection(rentCollection).find({}).toArray((err, rentals) => {
+    rentals.forEach(rental => {
+      // Parse through string to get rental end date
+      dateArr = rental.end.split("/");
+      m = dateArr[0];
+      d = dateArr[1];
+      y = dateArr[2];
+      if (m == date.getMonth()+1 && d == date.getDate() && y == date.getFullYear()) {
+        console.log("resetting to available");
+      }
+    });
+  })
+});
+
 
 module.exports = router;
