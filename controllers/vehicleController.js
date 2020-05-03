@@ -77,11 +77,13 @@ router.post('/add', function (req, res, next) {
 router.put('/edit/:vehicle_id', function (req, res, next) {
   var usrObj = req.body;
 
+  console.log(usrObj);
+
   jwt.verify(usrObj.token,'supersecret', function(err, decoded){
     if(err){
       res.send({
         error: true,
-        message: "Failed to update vehicle"
+        message: "Invalid token"
       });
     }
   });

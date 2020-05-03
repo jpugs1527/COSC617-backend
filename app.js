@@ -27,6 +27,7 @@ app.use(bodyParser.json());
 // Tell app.js where to get the controllers
 const userController = require('./controllers/userController');
 const vehicleController = require('./controllers/vehicleController');
+const rentController = require('./controllers/rentController');
 
 app.get('/', (req, res) => {
 
@@ -34,3 +35,4 @@ app.get('/', (req, res) => {
 
 app.use('/user', userController);
 app.use('/vehicle', vehicleController);
+app.use('/rent', rentController);
