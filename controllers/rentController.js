@@ -45,6 +45,7 @@ router.get('/view_all/:vehicleId', (req, res) => {
 router.get('/view_by_user/:userId', (req, res) => {
   db.getDB().collection(rentCollection).find({userId : req.params.userId}).toArray((err, rentDocuments) => {
     if (err) throw err;
+    console.log(rentDocuments);
     res.send(rentDocuments);
   });
 })

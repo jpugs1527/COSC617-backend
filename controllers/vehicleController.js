@@ -48,16 +48,16 @@ router.post('/image_upload', (req, res) => {
 router.post('/add', function (req, res, next) {
   var usrObj = req.body;
   usrObj['status'] = "available";
-  // jwt.verify(usrObj.token,'supersecret', function(err, decoded){
-  //   if(err){
-  //     res.send({
-  //       error: err,
-  //       message: "Failed to authorize user"
-  //     });
-  //   }
-  // });
+  jwt.verify(usrObj.token,'supersecret', function(err, decoded){
+    if(err){
+      res.send({
+        error: err,
+        message: "Failed to authorize user"
+      });
+    }
+  });
 
-  // delete usrObj.token;
+  delete usrObj.token;
   
   db.getDB().collection(collection).insertOne(usrObj, function(err, response) {
     if (err) {
@@ -76,8 +76,6 @@ router.post('/add', function (req, res, next) {
 
 router.put('/edit/:vehicle_id', function (req, res, next) {
   var usrObj = req.body;
-
-  console.log(usrObj);
 
   jwt.verify(usrObj.token,'supersecret', function(err, decoded){
     if(err){
