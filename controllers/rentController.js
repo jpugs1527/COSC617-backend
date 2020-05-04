@@ -59,7 +59,6 @@ function checkDate(startDate, endDate, todayDate) {
   var s = new Date(start[2], parseInt(start[1]) - 1, start[0]); 
   var e = new Date(end[2], parseInt(end[1]) - 1, end[0]); 
   var t = new Date(today[2], parseInt(today[1]) - 1, today[0]); 
-  console.log(s,e,t);
   if (t > s && t < e) { 
       return true; 
   } else { 
@@ -68,7 +67,7 @@ function checkDate(startDate, endDate, todayDate) {
 } 
 
 // Code that runs just daily to check if a rental period is over and 
-// automatically makes that vehicle available again ("59 11 * * *")
+// automatically makes that vehicle available again ("0 0 * * *" or "* * * * *" for dev purposes)
 var resetRentals = schedule.scheduleJob("* * * * *", function() {
   var today = new Date();
   var dd = today.getDate();
