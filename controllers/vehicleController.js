@@ -48,6 +48,7 @@ router.post('/image_upload', (req, res) => {
 router.post('/add', function (req, res, next) {
   var usrObj = req.body;
   usrObj['status'] = "available";
+  usrObj['location'] = req.body.location.toLowerCase();
   jwt.verify(usrObj.token,'supersecret', function(err, decoded){
     if(err){
       res.send({
@@ -106,7 +107,7 @@ router.put('/edit/:vehicle_id', function (req, res, next) {
 // Route for search
 router.post("/search", function(req, res, next) {
   var query = req.body;
-
+  query["location"] = req.body.location.toLowerCase();
   db.getDB().collection(collection).find( { $and: [ { location : query.location }, { status : "available" } ]}).toArray((err, documents) => {
     if (err) throw err;
     res.send(documents);
