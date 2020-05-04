@@ -108,7 +108,7 @@ router.put('/edit/:vehicle_id', function (req, res, next) {
 router.post("/search", function(req, res, next) {
   var query = req.body;
   query["location"] = req.body.location.toLowerCase();
-  db.getDB().collection(collection).find( { $and: [ { location : query.location }, { status : "available" } ]}).toArray((err, documents) => {
+  db.getDB().collection(collection).find({ location : query.location }).toArray((err, documents) => {
     if (err) throw err;
     res.send(documents);
   });
