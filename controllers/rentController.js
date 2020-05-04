@@ -29,11 +29,6 @@ router.post('/add', function (req, res, next) {
           message: "Failed to add rent history"
         });
       } else {
-        db.getDB().collection(vehicleCollection).updateOne({_id: db.getPrimaryKey(rentObj.vehicleId)}, { $set: {status: "rented"} }, function(err, response) {
-          if (err) {
-            console.log(err);
-          }
-        });
         res.send({
           error: false,
           message: "Successfully added rent history"
@@ -56,20 +51,34 @@ router.get('/view_by_user/:userId', (req, res) => {
   });
 });
 
+function checkDate(startDate, endDate, todayDate) { 
+  start = startDate.split("/"); 
+  end = endDate.split("/"); 
+  today = todayDate.split("/"); 
+    
+  var s = new Date(start[2], parseInt(start[1]) - 1, start[0]); 
+  var e = new Date(end[2], parseInt(end[1]) - 1, end[0]); 
+  var t = new Date(today[2], parseInt(today[1]) - 1, today[0]); 
+  console.log(s,e,t);
+  if (t > s && t < e) { 
+      return true; 
+  } else { 
+      return false;
+  } 
+} 
+
 // Code that runs just daily to check if a rental period is over and 
 // automatically makes that vehicle available again ("59 11 * * *")
-var resetRentals = schedule.scheduleJob("59 11 * * *", function() {
-  var date = new Date();
-  var dateArr, m, d, y;
-  var currVehicle;
+var resetRentals = schedule.scheduleJob("* * * * *", function() {
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth() + 1; 
+  var yyyy = today.getFullYear();
+
+  today = mm + '/' + dd + '/' + yyyy;
 
   db.getDB().collection(rentCollection).find({}).toArray((err, rentals) => {
     rentals.forEach(rental => {
-      // Parse through string to get rental end date
-      dateArr = rental.end.split("/");
-      m = dateArr[0];
-      d = dateArr[1];
-      y = dateArr[2];
 
       var currVehicle;
       // Some reason this isnt working.  Works as expected but not the best solution without this.
@@ -78,13 +87,20 @@ var resetRentals = schedule.scheduleJob("59 11 * * *", function() {
       //   console.log(vehicle);
       //   currVehicle = vehicle;
 
-        if (m == date.getMonth()+1 && d == date.getDate() && y == date.getFullYear()) {
+        if (!checkDate(rental.start, rental.end, today)) {
           console.log("Resetting to available");
           db.getDB().collection(vehicleCollection).updateOne({_id: db.getPrimaryKey(rental.vehicleId)}, { $set: {status: "available"} }, function(err, response) {
             if (err) {
               console.log(err);
             }
           });
+        } else if (checkDate(rental.start, rental.end, today)) {
+          console.log("Setting status to rented");
+            db.getDB().collection(vehicleCollection).updateOne({_id: db.getPrimaryKey(rental.vehicleId)}, { $set: {status: "rented"} }, function(err, response) {
+              if (err) {
+                console.log(err);
+              }
+            });
         }
       // });
     });
