@@ -20,7 +20,7 @@
     "express": "^4.8.7",
     "express-form-data": "^2.0.12",
     "jsonwebtoken": "^7.3.0",
-    "moment": "^2.17.1",
+    "moment": "^2.29.2",
     "moment-timezone": "^0.5.13",
     "mongo-express": "^0.54.0",
     "mongodb": "^3.5.5",
